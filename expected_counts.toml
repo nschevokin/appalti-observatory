@@ -1,0 +1,13 @@
+# Totals the build spec and the recon (docs/recon.md) state for each input file.
+# stage compares the staged tables against these and reports every mismatch.
+# A mismatch is published in evidence/stage_reconciliation.md, never adjusted here afterwards.
+
+[files."full.jsonl.gz"]
+lines = 562886             # recon q0/q1; 24 of them are stubs without a tender
+tenders = 562862           # spec: 562,862
+awards = 324030            # spec: 324,030
+contracts = 185259         # spec: 185,259
+parties = 1474656          # spec: 1,474,656
+supplier_role_rows = 355681        # recon q8
+award_supplier_refs = 390526       # spec "suppliers: 390,526" = sum of suppliers array lengths
+milestones = 83587         # spec: 83,587; location not yet known, counted at tender and contract level

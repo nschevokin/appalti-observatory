@@ -1,14 +1,15 @@
 RAW ?= data/raw/full.jsonl.gz
 URL := https://data.open-contracting.org/en/publication/117/download?name=full.jsonl.gz
 
-.PHONY: fetch-full recon recon2 recon3 recon-sample lint test
+.PHONY: fetch-full stage recon recon2 recon3 recon-sample lint test
 
-# Day-1 manual download. The proper `appalti download` + manifest is ticket A2.
+# Ticket A2: download (or adopt an existing file) and pin its sha256 in manifest.json.
 fetch-full:
-	mkdir -p data/raw
-	curl -L --fail -o $(RAW) "$(URL)"
-	sha256sum $(RAW)
-	@echo "Record the sha256 and today's date in docs/recon.md"
+	uv run appalti download
+
+# Ticket A3: typed staging tables plus row-count reconciliation (writes evidence/).
+stage:
+	uv run appalti stage
 
 recon:
 	uv run python scripts/run_recon.py --raw $(RAW) --out docs/recon_output.md

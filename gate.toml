@@ -1,0 +1,12 @@
+# Comparability thresholds for Gate 2.
+# Fixed on 2026-10-15, before any indicator was computed. See docs/decisions.md D007.
+# A change of mind is a NEW decision entry, never an edit of this file's history.
+
+[comparability]
+min_populatedness = 0.50
+max_populatedness_spread = 0.20
+volume_ratio_band = [0.5, 2.0]
+max_composition_drift = 0.15
+
+[indicators.single_bidder]
+requires = ["tender.numberOfTenderers"]

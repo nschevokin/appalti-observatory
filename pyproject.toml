@@ -1,0 +1,19 @@
+[project]
+name = "appalti-observatory"
+version = "0.0.1"
+description = "Procurement indicators that carry a measured statement of trust, and a pipeline that refuses to publish the ones that fail."
+requires-python = ">=3.12"
+dependencies = ["duckdb>=1.1", "rapidfuzz>=3.9"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/appalti"]
+
+[tool.ruff]
+line-length = 100

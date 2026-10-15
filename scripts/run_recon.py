@@ -32,9 +32,18 @@ def main() -> None:
     ap.add_argument("--raw", required=True)
     ap.add_argument("--sql", default="sql/recon/recon.sql")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--db", default=None, help="DuckDB file; keeps the raw table on disk so it can spill")
+    ap.add_argument("--reuse-raw", action="store_true", help="skip reloading raw if the --db already has it")
     args = ap.parse_args()
 
-    con = duckdb.connect()
+    if args.db:
+        Path(args.db).parent.mkdir(parents=True, exist_ok=True)
+    con = duckdb.connect(args.db or ":memory:")
+    con.execute("SET threads = 4")
+    # The raw table holds ~560k JSON documents; let DuckDB spill instead of running out of memory.
+    con.execute("SET preserve_insertion_order = false")
+    Path("data/.duckdb_tmp").mkdir(parents=True, exist_ok=True)
+    con.execute("SET temp_directory = 'data/.duckdb_tmp'")
     text = Path(args.sql).read_text().replace("$RAW_FILE", args.raw)
     report = [
         "# Recon output",
@@ -45,6 +54,11 @@ def main() -> None:
     ]
     for kind, name, sql in split_blocks(text):
         if kind == "setup":
+            if name == "raw" and args.reuse_raw and con.execute(
+                "SELECT count(*) FROM information_schema.tables WHERE table_name = 'raw'"
+            ).fetchone()[0]:
+                print("ok  raw (reused)")
+                continue
             con.execute(sql)
             continue
         cur = con.execute(sql)

@@ -58,12 +58,14 @@ jobs:
         with:
           name: ci-site
           path: build/site
-
   pages:
     # Publishes the committed site/ (built locally from the full file), not the CI build,
     # which only covers the 2025 file. See D039.
     if: github.ref == 'refs/heads/main'
     needs: pipeline
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -79,3 +81,4 @@ jobs:
           path: site
       - id: deployment
         uses: actions/deploy-pages@v4
+  

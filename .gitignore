@@ -5,3 +5,5 @@ __pycache__/
 *.duckdb.wal
 .ruff_cache/
 .pytest_cache/
+audit/
+build/

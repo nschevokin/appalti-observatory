@@ -29,7 +29,7 @@ CLASS_ORDER = list(CLASS_LABELS)
 CHART_NAMES = {"award_year": "Award year", "tender_year": "Tender year"}
 EVIDENCE_FILES = [
     "stage_reconciliation.md", "gate1_rejects.md", "coverage.md", "entities.md",
-    "audit_dev.md", "region_check.md", "indicators.md", "gate2.md",
+    "audit_dev.md", "region_check.md", "indicators.md", "gate2.md", "gate2_sensitivity.md",
 ]  # fmt: skip
 PAGES = [
     ("index.html", "Overview"),
@@ -484,6 +484,13 @@ def page_comparability(d: Data) -> str:
             [[p] + [f"{s['values'].get(p, float('nan')):.2f}" for s in series] for p in pairs],
         )
         + _refusal_html(d, [x for x in d.refusals() if x["clock"] == "award_year"], 6)
+        + (
+            '<div class="note">How much do these limits matter? The same measurements were '
+            "re-judged under stricter and looser limits, without changing the published ones: "
+            '<a href="evidence/gate2_sensitivity.md">evidence/gate2_sensitivity.md</a>. A pair '
+            "that fails by a small margin can pass under a slightly different limit; that file "
+            "lists the closest calls on both sides.</div>"
+        )
         + "<h2>Every judgement</h2>"
         + _table(["Indicator", "Clock", "Years", "Result", "Reason"], rows).replace(
             "<td>", '<td class="l">'

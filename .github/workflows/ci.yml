@@ -1,0 +1,78 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Unit tests (no network)
+        run: uv run pytest -q
+      - name: Cache the 2025 file
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-2025-v1
+      - name: Download the 2025 file and pin its hash
+        run: uv run appalti download --year 2025
+      - name: Run the real pipeline on the 2025 file
+        run: |
+          F=2025.jsonl.gz
+          DB=data/ci.duckdb
+          uv run appalti stage --file $F --db $DB
+          uv run appalti validate --file $F --db $DB
+          uv run appalti resolve build --file $F --db $DB
+          uv run appalti indicators --file $F --db $DB
+          uv run appalti gate check --db $DB
+          uv run appalti site build --db $DB --out build/site
+      - name: The gate must have judged something, and a site must exist
+        run: |
+          uv run python - <<'PY'
+          import pathlib
+          import duckdb
+          n = duckdb.connect("data/ci.duckdb", read_only=True).execute(
+              "SELECT count(*) FROM gate_decision").fetchone()[0]
+          assert n >= 1, "gate_decision is empty: the pipeline ran without judging anything"
+          assert pathlib.Path("build/site/index.html").stat().st_size > 1000, "no site built"
+          print(f"gate_decision rows: {n}")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ci-site
+          path: build/site
+
+  pages:
+    # Publishes the committed site/ (built locally from the full file), not the CI build,
+    # which only covers the 2025 file. See D039.
+    if: github.ref == 'refs/heads/main'
+    needs: pipeline
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

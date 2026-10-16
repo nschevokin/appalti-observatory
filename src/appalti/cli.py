@@ -1,4 +1,4 @@
-"""Command line entry point: `appalti <command>`: `download` (A2), `stage` (A3), `validate` (A4)."""
+"""Command line entry point: `appalti <command>`: `download` (A2), `stage` (A3), `validate` (A4), `coverage` (A5), `resolve` and `regions` (week 2)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
+from appalti import audit as au
+from appalti import coverage as cv
 from appalti import download as dl
+from appalti import entities as en
+from appalti import regions as rg
 from appalti import stage as st
 from appalti import validate as va
 
@@ -39,7 +43,105 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("--expected", default="expected_counts.toml", type=Path)
     v.add_argument("--out", default="evidence/gate1_rejects.md", type=Path)
 
+    c = sub.add_parser("coverage", help="records per period and populatedness per field")
+    c.add_argument("--file", default="full.jsonl.gz")
+    c.add_argument("--manifest", default="manifest.json", type=Path)
+    c.add_argument("--db", default="data/appalti.duckdb", type=Path)
+    c.add_argument("--gate", default="gate.toml", type=Path)
+    c.add_argument("--out", default="evidence/coverage.md", type=Path)
+
+    r = sub.add_parser("resolve", help="entities, award facts, and the entity audit")
+    rs = r.add_subparsers(dest="action", required=True)
+    for name in ("build", "sample", "accept-suggested", "eval", "confirm"):
+        a = rs.add_parser(name)
+        a.add_argument("--db", default="data/appalti.duckdb", type=Path)
+        a.add_argument("--audit", default="audit.toml", type=Path)
+        a.add_argument("--dev", default="audit/groups_dev.csv", type=Path)
+        a.add_argument("--test", default="audit/groups_test.csv", type=Path)
+    rs.choices["build"].add_argument("--file", default="full.jsonl.gz")
+    rs.choices["build"].add_argument("--manifest", default="manifest.json", type=Path)
+    rs.choices["build"].add_argument("--gate", default="gate1.toml", type=Path)
+    rs.choices["build"].add_argument("--cap", default="labels/cap_region.csv", type=Path)
+    rs.choices["build"].add_argument("--out", default="evidence/entities.md", type=Path)
+    rs.choices["sample"].add_argument("--force", action="store_true")
+    rs.choices["accept-suggested"].add_argument("--split", choices=["dev", "test"], required=True)
+
+    g = sub.add_parser("regions", help="check the postal-code to region mapping (D026)")
+    gs = g.add_subparsers(dest="action", required=True)
+    for name in ("sample", "eval"):
+        a = gs.add_parser(name)
+        a.add_argument("--sheet", default="audit/region_check.csv", type=Path)
+    gs.choices["sample"].add_argument("--db", default="data/appalti.duckdb", type=Path)
+    gs.choices["eval"].add_argument("--out", default="evidence/region_check.md", type=Path)
+
     args = parser.parse_args(argv)
+
+    if args.command == "regions":
+        try:
+            if args.action == "sample":
+                n = rg.sample(args.db, args.sheet)
+                print(
+                    f"wrote {args.sheet} with {n} rows; fill the status column with ok or wrong:<Region>"
+                )
+            else:
+                res = rg.evaluate(args.sheet, args.out)
+                print(f"{res['wrong']} wrong of {res['n']}; wrote {args.out}")
+        except rg.RegionCheckError as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "resolve":
+        try:
+            cfg = en.load_audit(args.audit)
+            if args.action == "build":
+                res = en.run(
+                    args.file, args.manifest, args.db, args.gate, args.audit, args.cap, args.out
+                )
+                for name, want, got in res.checks:
+                    print(f"{'ok' if want == got else 'FAIL':5}{name}: {got:,}")
+                print(f"run {res.run_id}; wrote {args.out}")
+                return 1 if res.failed else 0
+            if args.action == "sample":
+                info = au.sample(args.db, cfg, args.dev, args.test, args.force)
+                print(
+                    f"{info['groups']:,} multi-id legal-form names; population {info['population']}"
+                )
+                print(
+                    f"wrote {args.dev} ({info['dev']} groups) and {args.test} ({info['test']} groups)"
+                )
+                return 0
+            if args.action == "accept-suggested":
+                path = args.dev if args.split == "dev" else args.test
+                print(f"{au.accept_suggested(path)} blank labels filled from the suggested rule")
+                return 0
+            if args.action == "eval":
+                stats = au.evaluate(args.dev, cfg, Path("evidence/audit_dev.md"))
+                print(
+                    f"split rate {stats['split_rate']}; rules {stats['rules']}; wrote evidence/audit_dev.md"
+                )
+                return 0
+            res = au.confirm(
+                args.test,
+                cfg,
+                args.audit,
+                Path("evidence/audit_test_confirmation.json"),
+                Path("evidence/audit_test.md"),
+            )
+            print(f"test opened once; chosen rules meet the bar: {res['chosen_rules_meet_bar']}")
+            return 0
+        except (au.AuditError, en.EntitiesRefused) as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+
+    if args.command == "coverage":
+        try:
+            res = cv.run(args.file, args.manifest, args.db, args.gate, args.out)
+        except cv.CoverageRefused as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        print(f"run {res.run_id}: {res.rows:,} coverage rows stored; wrote {args.out}")
+        return 0
 
     if args.command == "validate":
         try:

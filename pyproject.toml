@@ -5,6 +5,9 @@ description = "Procurement indicators that carry a measured statement of trust, 
 requires-python = ">=3.12"
 dependencies = ["duckdb>=1.1", "rapidfuzz>=3.9"]
 
+[project.scripts]
+appalti = "appalti.cli:main"
+
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]
 

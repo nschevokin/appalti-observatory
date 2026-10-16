@@ -1,0 +1,12 @@
+{
+  "files": {
+    "full.jsonl.gz": {
+      "adopted": true,
+      "bytes": 183974254,
+      "downloaded_at": "2026-10-15T16:05:03+00:00",
+      "sha256": "35266f3e1a5bfe5680207dd85ad18ad55858c9a2e8b7dc66447c94d5313ab720",
+      "url": "https://data.open-contracting.org/en/publication/117/download?name=full.jsonl.gz"
+    }
+  },
+  "source": "https://data.open-contracting.org/en/publication/117/download?name=<file>"
+}

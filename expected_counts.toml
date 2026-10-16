@@ -11,3 +11,8 @@ parties = 1474656          # spec: 1,474,656
 supplier_role_rows = 355681        # recon q8
 award_supplier_refs = 390526       # spec "suppliers: 390,526" = sum of suppliers array lengths
 milestones = 83587         # spec: 83,587; location not yet known, counted at tender and contract level
+
+# Gate 1 numbers the recon predicts (rows, not processes). Differences are reported, not hidden.
+gate1_missing_required = 24         # the 24 stub lines (only ocid, tag, id)
+gate1_dangling_award_ref = 7        # 1 null awardID + 6 dangling (recon q6)
+gate1_flagged_award_date = 59402    # 500 before 2018 + 58,680 in 2018 + 220 undated + 2 in 2027 (D014)

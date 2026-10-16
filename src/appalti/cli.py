@@ -1,4 +1,4 @@
-"""Command line entry point: `appalti <command>`: `download` (A2) and `stage` (A3)."""
+"""Command line entry point: `appalti <command>`: `download` (A2), `stage` (A3), `validate` (A4)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 
 from appalti import download as dl
 from appalti import stage as st
+from appalti import validate as va
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -30,7 +31,32 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--expected", default="expected_counts.toml", type=Path)
     g.add_argument("--out", default="evidence/stage_reconciliation.md", type=Path)
 
+    v = sub.add_parser("validate", help="Gate 1: validate staged records, write rejected_record")
+    v.add_argument("--file", default="full.jsonl.gz")
+    v.add_argument("--manifest", default="manifest.json", type=Path)
+    v.add_argument("--db", default="data/appalti.duckdb", type=Path)
+    v.add_argument("--gate", default="gate1.toml", type=Path)
+    v.add_argument("--expected", default="expected_counts.toml", type=Path)
+    v.add_argument("--out", default="evidence/gate1_rejects.md", type=Path)
+
     args = parser.parse_args(argv)
+
+    if args.command == "validate":
+        try:
+            res = va.run(args.file, args.manifest, args.db, args.gate, args.expected, args.out)
+        except va.StageMismatch as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        for name, n, procs in res.by_reason:
+            print(f"{name:22} {n:>9,} rows  {procs:>9,} processes")
+        print(f"rejected {res.rejected_processes:,} of {res.lines:,} ({res.share:.4%})")
+        for m in res.expectation_mismatches:
+            print(f"DIFFERS  {m}")
+        if res.aborted:
+            print(f"ABORT  more than {res.max_share:.0%} rejected; no clean_* views created")
+            return 3
+        print(f"wrote {args.out}")
+        return 1 if res.expectation_mismatches else 0
 
     if args.command == "stage":
         try:

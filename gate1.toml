@@ -1,0 +1,7 @@
+# Gate 1 (validation at ingestion). Fixed before the first run of `appalti validate`.
+# See docs/decisions.md D014 and D029. A change of mind is a NEW decision entry.
+
+[gate1]
+min_release_date = "2019-01-01"   # upper bound is the file's publication date (D029)
+max_reject_share = 0.02           # share of processes rejected above which the load aborts
+allowed_currencies = ["EUR"]

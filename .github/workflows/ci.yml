@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONPATH: src
+
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -29,17 +32,17 @@ jobs:
           path: data/raw
           key: raw-2025-v1
       - name: Download the 2025 file and pin its hash
-        run: uv run appalti download --year 2025
+        run: uv run python -m appalti download --year 2025
       - name: Run the real pipeline on the 2025 file
         run: |
           F=2025.jsonl.gz
           DB=data/ci.duckdb
-          uv run appalti stage --file $F --db $DB
-          uv run appalti validate --file $F --db $DB
-          uv run appalti resolve build --file $F --db $DB
-          uv run appalti indicators --file $F --db $DB
-          uv run appalti gate check --db $DB
-          uv run appalti site build --db $DB --out build/site
+          uv run python -m appalti stage --file $F --db $DB
+          uv run python -m appalti validate --file $F --db $DB
+          uv run python -m appalti resolve build --file $F --db $DB
+          uv run python -m appalti indicators --file $F --db $DB
+          uv run python -m appalti gate check --db $DB
+          uv run python -m appalti site build --db $DB --out build/site
       - name: The gate must have judged something, and a site must exist
         run: |
           uv run python - <<'PY'

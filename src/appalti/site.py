@@ -309,6 +309,14 @@ def page_value(d: Data) -> str:
             head,
             rows,
         )
+        + (
+            '<div class="note">A line that joins two years means the two years passed Gate 2: '
+            "their records are similarly complete and similarly mixed. It does not explain a "
+            "change in level. A large rise or fall between two joined years can still be real "
+            "(a funding programme, a change in what is tendered) or can come from a few very "
+            "large processes; the flagged columns in the table show how much value sits in "
+            "processes whose awards exceed ten times the tender amount.</div>"
+        )
         + _refusal_html(d, d.refusals("awarded_value"))
         + reg
     )
@@ -362,7 +370,11 @@ def page_concentration(d: Data) -> str:
         '<p class="lede">How much of each year\'s awarded value went to its five largest suppliers.'
         " Shown as a range because the same company can appear under more than one identifier.</p>"
         f'<div class="note">{escape(note)} Awards without a supplier count in the total but not in '
-        "the top five. A supplier named in several tenders is counted once per year.</div>"
+        "the top five. A supplier named in several tenders is counted once per year. Framework "
+        "agreements, consortia and groups of related companies can hide concentration: a "
+        "consortium is one identifier here, and companies of the same group are separate "
+        "unless they share an identifier or a legal-form name, so these figures are more likely "
+        "to understate concentration than to overstate it.</div>"
         + "".join(figs)
         + _refusal_html(d, d.refusals("concentration"))
     )

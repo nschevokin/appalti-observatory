@@ -28,6 +28,23 @@ Two rules were added after the first full run and are recorded as post hoc: the 
 (D040) and the award-year clock (D015). Decisions are in `docs/decisions.md`; entries are never
 edited.
 
+## How sensitive is this to the thresholds?
+
+The limits in `gate.toml` were fixed before the data was judged and have not moved.
+`evidence/gate2_sensitivity.md` re-judges the same measurements under other limits, in memory, and
+reports what flips:
+
+- The populatedness limits do not matter: every field is either almost fully populated or empty.
+- The refusal of 2023 onward does not depend on the limits. Widening the volume band to 0.33 to 3.0
+  changes nothing, because the 2022 to 2023 ratio is 0.26.
+- The break between 2020 and 2021 does depend on the drift limit. The mix shifted by 0.161 against
+  0.15; at a limit of 0.20 the two years join and 2018 to 2022 is one line. At 0.10, or with a
+  volume band of 0.67 to 1.5, 2021 to 2022 is refused and only 2018 to 2020 remains.
+- The closest call in the whole set is the tender-year pair 2019 to 2020: 0.153 against 0.15.
+
+The claim is that a stated rule was applied before the result was known, and that the result moves
+only where this page says it does. It is not that 2021 is a real break in Italian procurement.
+
 ## Limits and non-claims
 
 - Awarded is not spent. Execution and payment sections of the source are empty, and contracts are

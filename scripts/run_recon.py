@@ -15,7 +15,7 @@ def split_blocks(text: str):
     marks = list(BLOCK.finditer(text))
     for i, m in enumerate(marks):
         end = marks[i + 1].start() if i + 1 < len(marks) else len(text)
-        yield m.group(1), m.group(2), text[m.end():end].strip()
+        yield m.group(1), m.group(2), text[m.end() : end].strip()
 
 
 def md_table(cols, rows) -> str:
@@ -32,8 +32,12 @@ def main() -> None:
     ap.add_argument("--raw", required=True)
     ap.add_argument("--sql", default="sql/recon/recon.sql")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--db", default=None, help="DuckDB file; keeps the raw table on disk so it can spill")
-    ap.add_argument("--reuse-raw", action="store_true", help="skip reloading raw if the --db already has it")
+    ap.add_argument(
+        "--db", default=None, help="DuckDB file; keeps the raw table on disk so it can spill"
+    )
+    ap.add_argument(
+        "--reuse-raw", action="store_true", help="skip reloading raw if the --db already has it"
+    )
     args = ap.parse_args()
 
     if args.db:
@@ -47,16 +51,20 @@ def main() -> None:
     text = Path(args.sql).read_text().replace("$RAW_FILE", args.raw)
     report = [
         "# Recon output",
-        f"Run date: {dt.datetime.now().isoformat(timespec='seconds')}",
+        f"Run date: {dt.datetime.now(dt.UTC).isoformat(timespec='seconds')}",
         f"Input: `{args.raw}`",
         f"DuckDB: {duckdb.__version__}",
         "",
     ]
     for kind, name, sql in split_blocks(text):
         if kind == "setup":
-            if name == "raw" and args.reuse_raw and con.execute(
-                "SELECT count(*) FROM information_schema.tables WHERE table_name = 'raw'"
-            ).fetchone()[0]:
+            if (
+                name == "raw"
+                and args.reuse_raw
+                and con.execute(
+                    "SELECT count(*) FROM information_schema.tables WHERE table_name = 'raw'"
+                ).fetchone()[0]
+            ):
                 print("ok  raw (reused)")
                 continue
             con.execute(sql)

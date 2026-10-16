@@ -72,7 +72,7 @@ purpose: it has no timestamp, so `git diff site/` shows exactly which published 
 CI (`.github/workflows/ci.yml`) lints, runs the tests, then runs the whole pipeline on the real 2025
 file and fails if Gate 2 judged nothing; Pages publishes the committed `site/` (D039).
 
-Method and definitions: `docs/methodology.md`. Audit of the entity join: `docs/methodology.md`,
+Architecture and data flow: `docs/architecture.md`. Method and definitions: `docs/methodology.md`. Audit of the entity join: `docs/methodology.md`,
 week 2.
 
 ## Attribution and licence

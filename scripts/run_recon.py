@@ -8,7 +8,7 @@ from pathlib import Path
 
 import duckdb
 
-BLOCK = re.compile(r"^-- @(setup|query) (\w+)\s*$", re.M)
+BLOCK = re.compile(r"^-- @(setup|query) (\w+)\s*$", re.MULTILINE)
 
 
 def split_blocks(text: str):

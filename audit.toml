@@ -1,0 +1,16 @@
+# Settings for the entity audit (D020, D034). Fixed on 2026-10-16, before any group was labelled.
+# A change of mind is a NEW decision entry, never an edit of this file's history.
+
+[audit]
+seed = 20261016            # fixed seed for sampling and for the dev/test split (D012)
+sample_size = 100          # groups of same-name, different-id suppliers to hand-label
+dev_share = 0.6            # share of each stratum that goes to dev; the rest is test
+per_stratum_cap = 25       # at most this many groups per stratum before filling up
+
+# A merge rule is applied to the entity table only if, on the dev labels, its precision is at
+# least min_rule_precision with at least min_rule_support decided groups (D034).
+min_rule_precision = 0.95
+min_rule_support = 10
+
+# The decision. Empty until the dev evaluation has been read; then a NEW decision entry names it.
+apply_rules = []

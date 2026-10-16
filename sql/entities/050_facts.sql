@@ -19,7 +19,7 @@ WHERE t.ocid IS NOT NULL;
 -- @step fact_award
 CREATE OR REPLACE TABLE fact_award AS
 WITH sums AS (SELECT ocid, sum(amount) AS award_sum FROM clean_award GROUP BY ocid)
-SELECT a.ocid, a.award_id, a.award_year,
+SELECT a.ocid, a.award_id, a.award_year, r.tender_start_year AS tender_year,
        b.buyer_entity_id,
        CASE WHEN a.currency = 'EUR' THEN a.amount END AS amount_eur,
        r.tender_amount,

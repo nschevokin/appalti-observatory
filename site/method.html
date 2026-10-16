@@ -1,0 +1,84 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Method and limits · Appalti Observatory</title><style>
+:root{color-scheme:light;--surface:#fcfcfb;--panel:#f3f2ee;--text:#0b0b0b;--text2:#52514e;
+--muted:#6b6a66;--grid:#e4e3df;--axis:#b9b8b2;--accent:#184f95;--warn-bg:#fdf3e3;--warn:#8a4b00;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;}
+@media (prefers-color-scheme: dark){:root{color-scheme:dark;--surface:#1a1a19;--panel:#242422;
+--text:#f0efec;--text2:#c3c2b7;--muted:#9c9b95;--grid:#34332f;--axis:#5b5a55;--accent:#86b6ef;
+--warn-bg:#2b2316;--warn:#f0c27a;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;
+--s5:#d55181;--s6:#008300;--s7:#9085e9;}}
+*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--text);
+font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+header,main,footer{max-width:760px;margin:0 auto;padding:0 16px}
+header{padding-top:20px}nav{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 24px;
+font-size:14px}nav a{color:var(--text2);text-decoration:none;padding:2px 0;
+border-bottom:2px solid transparent}nav a[aria-current]{color:var(--text);border-color:var(--accent)}
+h1{font-size:28px;line-height:1.2;margin:8px 0 12px}h2{font-size:20px;margin:32px 0 8px}
+p,li{max-width:68ch}a{color:var(--accent)}
+.lede{font-size:18px;color:var(--text2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:20px 0}
+.tile{background:var(--panel);border-radius:8px;padding:12px 14px}
+.tile b{display:block;font-size:26px;line-height:1.2}.tile span{font-size:13px;color:var(--text2)}
+.refusal{background:var(--warn-bg);border-left:4px solid var(--warn);padding:12px 16px;
+margin:16px 0;border-radius:4px}.refusal p{margin:6px 0}.refusal strong{color:var(--warn)}
+.note{background:var(--panel);padding:10px 14px;border-radius:6px;font-size:14px;margin:16px 0}
+figure{margin:20px 0}figcaption{font-size:13px;color:var(--text2)}
+svg.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--text2);font:12px system-ui,sans-serif}.chart .label{fill:var(--text)}
+.chart .np{fill:var(--muted);font-size:11px}.chart .legend{fill:var(--text2)}
+.chart .grid{stroke:var(--grid);stroke-width:1}.chart .axis{stroke:var(--axis);stroke-width:1}
+.chart .line{stroke-width:2;fill:none}.chart .dot{stroke:var(--surface);stroke-width:2}
+.chart .dot.ring{fill:var(--surface);stroke-width:2.5}.chart .okband{fill:var(--panel)}
+.chart .band{opacity:.22;stroke:none}.chart .seg{stroke:var(--surface);stroke-width:2}
+.s1{fill:var(--s1);stroke:var(--s1)}.s2{fill:var(--s2);stroke:var(--s2)}
+.s3{fill:var(--s3);stroke:var(--s3)}.s4{fill:var(--s4);stroke:var(--s4)}
+.s5{fill:var(--s5);stroke:var(--s5)}.s6{fill:var(--s6);stroke:var(--s6)}
+.s7{fill:var(--s7);stroke:var(--s7)}
+.chart .line.s1,.chart .line.s2,.chart .line.s3,.chart .line.s4{fill:none}
+.chart .dot.ring.s1{stroke:var(--s1)}.chart .dot.ring.s2{stroke:var(--s2)}
+.chart .dot.ring.s3{stroke:var(--s3)}.chart .dot.ring.s4{stroke:var(--s4)}
+.chart .swatch{stroke:none}
+.chart .seg{stroke:var(--surface)}.chart .seg.s1,.chart .seg.s2,.chart .seg.s3,.chart .seg.s4,
+.chart .seg.s5,.chart .seg.s6,.chart .seg.s7{stroke:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{text-align:right;padding:4px 8px;border-bottom:1px solid var(--grid)}
+th:first-child,td:first-child{text-align:left}th{color:var(--text2);font-weight:600}
+td.l{text-align:left}details{margin:8px 0}summary{cursor:pointer;color:var(--text2);font-size:14px}
+footer{font-size:13px;color:var(--text2);padding-bottom:40px;margin-top:40px;
+border-top:1px solid var(--grid);padding-top:16px}code{font-size:.9em}
+@media(max-width:560px){h1{font-size:24px}}
+</style></head><body><header><div style='font-size:14px;color:var(--text2)'>Appalti Observatory</div><nav><a href="index.html">Overview</a><a href="awarded-value.html">Awarded value</a><a href="concentration.html">Concentration</a><a href="procedure-mix.html">Procedure mix</a><a href="single-bidder.html">Single bidder</a><a href="comparability.html">Comparability</a><a href="quality.html">Data quality</a><a href="method.html" aria-current=page>Method</a></nav></header><main><h1>Method and limits</h1>
+<h2>Question</h2><p>What do Italian public procurement records support saying about how much was
+awarded, to whom, and by what procedure, and where do they not?</p>
+<h2>Data</h2><p>ANAC records in the Open Contracting Data Standard, via the Open Contracting
+Partnership mirror (CC BY 4.0), pinned by sha256. Only tenders above 40,000 euro are present.</p>
+<h2>Indicators</h2><ul>
+<li><b>Awarded value</b>: sum of award amounts in euro. The headline leaves out processes whose awards
+sum to more than ten times the tender amount (D025); the table shows both.</li>
+<li><b>Supplier concentration</b>: share of the headline value held by the five largest suppliers.
+Awards with several suppliers are split equally (D021). Shown as a range between the identifier join
+and a merge of ids sharing a legal-form name.</li>
+<li><b>Procedure mix</b>: share of value by class of procedure, from the procedure code (D023).</li>
+<li><b>Single-bidder share</b>: awards with one tenderer over awards with a published tenderer count.
+Not computable here: the field is empty.</li></ul>
+<h2>Two clocks</h2><p>Every indicator is computed on the award year and on the tender start year
+(D032). The release year is not used: its counts follow when the publisher loaded records, not when
+things happened.</p>
+<h2>Gates</h2><p>Gate 1 validates every record at ingestion and publishes the rejection counts. Gate 2
+judges each pair of consecutive years on populatedness, volume ratio and composition drift against
+thresholds in <code>gate.toml</code>, fixed before any indicator was computed. A refusal is printed
+in place of the comparison.</p>
+<h2>Entities</h2><p>A supplier is its normalised tax identifier. A hand audit of multi-identifier names
+measured how often this splits one company; no merge rule met the pre-registered bar, so none is
+applied.</p>
+<h2>Limits</h2><ul><li>Awarded, not spent.</li><li>Above-threshold contracts only.</li>
+<li>Regions come from postal codes, not from an official field.</li>
+<li>Tender and award records can be published late or restated; counts for recent years are
+incomplete.</li><li>The audit labels were drafted by an AI assistant and reviewed by the author (D036).
+</li></ul>
+<p>Full decisions: <a href="https://github.com/nschevokin/appalti-observatory/blob/main/docs/decisions.md">decisions log</a>.</p><div class="note"><strong>What these figures do not mean.</strong>
+<em>Awarded</em> is not <em>spent</em>: the planning, documents and transactions sections of the
+data are empty, so execution and payment are invisible, and contracts are amended, cancelled and
+underspent. This is not all public procurement: the threshold is 40,000 euro, so everything below
+it is absent. A single bidder is not evidence of wrongdoing; it has ordinary explanations such as
+specialised goods, emergencies, small regional markets and framework call-offs. No page names or
+ranks a buyer or supplier by any risk indicator.</div><p class="note">Gate 1 excluded 5,165 of 562,886 processes (0.92%) before any figure here was computed. The exclusion is concentrated in a small set of buyers and is counted on the <a href="quality.html">data quality</a> page.</p></main><footer>Data: Italian ANAC procurement records via the Open Contracting Partnership (CC BY 4.0). Code: MIT. Input sha256 <code>35266f3e1a5bfe56…</code>, indicators run <code>35266f3e-20261016T143024732152Z</code>, Gate 2 run <code>35266f3e-G20261016T143459217263Z</code>. Every figure traces to <a href="evidence/indicators.md">evidence/indicators.md</a> and <a href="evidence/gate2.md">evidence/gate2.md</a>.</footer></body></html>

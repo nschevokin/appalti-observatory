@@ -10,8 +10,12 @@ from appalti import audit as au
 from appalti import coverage as cv
 from appalti import download as dl
 from appalti import entities as en
+from appalti import gate2 as g2
+from appalti import indicators as ind
 from appalti import regions as rg
+from appalti import site as sitemod
 from appalti import stage as st
+from appalti import status as statusmod
 from appalti import validate as va
 
 
@@ -74,7 +78,63 @@ def main(argv: list[str] | None = None) -> int:
     gs.choices["sample"].add_argument("--db", default="data/appalti.duckdb", type=Path)
     gs.choices["eval"].add_argument("--out", default="evidence/region_check.md", type=Path)
 
+    i = sub.add_parser("indicators", help="compute the four indicators on both clocks (C1)")
+    i.add_argument("--file", default="full.jsonl.gz")
+    i.add_argument("--manifest", default="manifest.json", type=Path)
+    i.add_argument("--db", default="data/appalti.duckdb", type=Path)
+    i.add_argument("--gate", default="gate.toml", type=Path)
+    i.add_argument("--proc", default="labels/procedure_class.csv", type=Path)
+    i.add_argument("--out", default="evidence/indicators.md", type=Path)
+
+    gg = sub.add_parser("gate", help="Gate 2: comparability (C2)")
+    gs2 = gg.add_subparsers(dest="action", required=True)
+    gc = gs2.add_parser("check")
+    gc.add_argument("--db", default="data/appalti.duckdb", type=Path)
+    gc.add_argument("--gate", default="gate.toml", type=Path)
+    gc.add_argument("--out", default="evidence/gate2.md", type=Path)
+
+    sg = sub.add_parser("site", help="render the static site (C3)")
+    ss = sg.add_subparsers(dest="action", required=True)
+    sb = ss.add_parser("build")
+    sb.add_argument("--db", default="data/appalti.duckdb", type=Path)
+    sb.add_argument("--out", default="site", type=Path)
+    sb.add_argument("--evidence", default="evidence", type=Path)
+
+    stt = sub.add_parser("status", help="current run, counts, last Gate 2 decisions")
+    stt.add_argument("--db", default="data/appalti.duckdb", type=Path)
+
     args = parser.parse_args(argv)
+
+    if args.command == "status":
+        print("\n".join(statusmod.lines(args.db)))
+        return 0
+
+    if args.command == "indicators":
+        try:
+            res = ind.run(args.file, args.manifest, args.db, args.gate, args.proc, args.out)
+        except ind.IndicatorsRefused as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        print(f"run {res.run_id}: {res.rows:,} indicator rows; wrote {args.out}")
+        return 0
+
+    if args.command == "gate":
+        try:
+            r2 = g2.check(args.db, args.gate, args.out)
+        except ind.IndicatorsRefused as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        print(f"run {r2.run_id}: {r2.decisions} decisions, {r2.refusals} refused; wrote {args.out}")
+        return 0
+
+    if args.command == "site":
+        try:
+            pages = sitemod.build(args.db, args.out, args.evidence)
+        except sitemod.SiteRefused as exc:
+            print(f"REFUSED  {exc}", file=sys.stderr)
+            return 2
+        print(f"wrote {len(pages)} pages to {args.out}")
+        return 0
 
     if args.command == "regions":
         try:

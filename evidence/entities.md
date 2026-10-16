@@ -1,5 +1,5 @@
 # Entities and award facts (tickets B1, B3)
-Run `35266f3e-20261016T133519892111Z`, input `full.jsonl.gz`, sha256 `35266f3e1a5bfe5680207dd85ad18ad55858c9a2e8b7dc66447c94d5313ab720`.
+Run `35266f3e-20261016T142921670781Z`, input `full.jsonl.gz`, sha256 `35266f3e1a5bfe5680207dd85ad18ad55858c9a2e8b7dc66447c94d5313ab720`.
 
 Counts only; no identifier or name appears in this file (D009, D022, D030).
 

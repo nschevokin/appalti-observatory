@@ -30,6 +30,9 @@ def rec(
     amount: float = 900.0,
     tender_amount: float = 1000.0,
     tenderers: int | None = None,
+    tender_year: int | None = None,
+    cod: int = 1,
+    cpv: str | None = None,
 ) -> dict:
     parties = [
         {
@@ -51,11 +54,13 @@ def rec(
         )
     tender = {
         "value": {"amount": tender_amount, "currency": "EUR"},
-        "tenderPeriod": {"startDate": f"{year}-01-01"},
-        "procurementMethodDetails": "COD:1 ; TITLE:x",
+        "tenderPeriod": {"startDate": f"{tender_year or year}-01-01"},
+        "procurementMethodDetails": f"COD:{cod} ; TITLE:x",
     }
     if tenderers is not None:
         tender["numberOfTenderers"] = tenderers
+    if cpv is not None:
+        tender["items"] = [{"id": "1", "classification": {"scheme": "CPV", "id": f"{cpv}000000"}}]
     return {
         "ocid": f"o{i}",
         "id": f"r{i}",

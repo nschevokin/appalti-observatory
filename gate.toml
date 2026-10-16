@@ -10,3 +10,13 @@ max_composition_drift = 0.15
 
 [indicators.single_bidder]
 requires = ["tender.numberOfTenderers"]
+
+# Added 2026-10-16 (D038), before any indicator was computed. The thresholds above are unchanged.
+[window]
+first_period = 2018
+last_period = 2025
+
+[informational]
+# Not a refusal: a note on the page when the two clocks (D032) differ by more than this
+# relative amount in awarded value for the same year.
+max_clock_divergence = 0.25
